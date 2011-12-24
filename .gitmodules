@@ -40,9 +40,9 @@
 [submodule ".vim/bundle/piv"]
 	path = .vim/bundle/piv
 	url = git://github.com/spf13/PIV.git
-[submodule ".vim/bundle/VimDebugger"]
-	path = .vim/bundle/VimDebugger
-	url = git://github.com/taxilian/VimDebugger.git
+;[submodule ".vim/bundle/VimDebugger"]
+	;path = .vim/bundle/VimDebugger
+	;url = git://github.com/taxilian/VimDebugger.git
 [submodule ".vim/bundle/nerdtree"]
 	path = .vim/bundle/nerdtree
 	url = git://github.com/spf13/nerdtree.git
