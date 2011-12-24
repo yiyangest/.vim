@@ -11,7 +11,7 @@
 " Environment {
 	" Basics {
 		set nocompatible 		" must be first line
-		set background=dark     " Assume a dark background
+		set background=light     " Assume a dark background
 	" }
 
 	" Windows Compatible {
@@ -32,7 +32,7 @@
 " }
 
 " General {
-	set background=dark         " Assume a dark background
+	set background=light         " Assume a dark background
     if !has('win32') && !has('win64')
         set term=$TERM       " Make arrow and other keys work
     endif
@@ -426,9 +426,12 @@
 " GUI Settings {
 	" GVIM- (here instead of .gvimrc)
 	if has('gui_running')
+        set background=dark
 		set guioptions-=T          	" remove the toolbar
 		set lines=40               	" 40 lines of text instead of 24,
 	else
+        set background=light
+        se  t_Co=16
 		set term=builtin_ansi       " Make arrow and other keys work
 	endif
 " }
