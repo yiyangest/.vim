@@ -91,6 +91,9 @@
         Bundle 'leshill/vim-json'
         Bundle 'groenewege/vim-less'
         Bundle 'taxilian/vim-web-indent'
+        "customized by yyy
+        Bundle 'walm/jshint.vim'
+        Bundle 'pangloss/vim-javascript'
 
     " HTML
         Bundle 'HTML-AutoCloseTag'
