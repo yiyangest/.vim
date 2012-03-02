@@ -34,21 +34,9 @@ The goal has always been to add functionality without changing all the features,
 
 # Installation 
 
-<<<<<<< HEAD
-    curl https://raw.github.com/spf13/spf13-vim/master/bootstrap.sh -o - | sh
+    curl https://raw.github.com/yiyangest/.vim/3.0/bootstrap.sh -o - | sh
  
 or
-=======
-## Linux, \*nix, Mac OSX Installation
->>>>>>> FETCH_HEAD
-
-The easiest way to install spf13-vim is to use our [automatic installer](http://j.mp/spf13-vim) by simply copying and pasting the following line into a terminal. This will install spf13-vim and backup your existing vim configuration. If you are upgrading from a prior version (before 3.0) this is also the recommended installation.
-
-```bash
-
-    curl http://j.mp/spf13-vim3 -L -o - | sh
-
-```
 
 ## Installing on Windows
 
