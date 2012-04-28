@@ -150,6 +150,8 @@
     set tabpagemax=15               " only show 15 tabs
     set showmode                    " display the current mode
 
+    set t_Co=256
+
     set cursorline                  " highlight current line
 
     if has('cmdline_info')
