@@ -23,7 +23,7 @@
 
     " Windows Compatible {
         " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
-        " across (heterogeneous) systems easier. 
+        " across (heterogeneous) systems easier.
         if has('win32') || has('win64')
           set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
         endif
@@ -42,7 +42,9 @@
         Bundle 'gmarik/vundle'
         Bundle 'MarcWeber/vim-addon-mw-utils'
         Bundle 'tomtom/tlib_vim'
-        Bundle 'mileszs/ack.vim'
+        if executable('ack')
+            Bundle 'mileszs/ack.vim'
+        endif
 
     " Use local bundles if available {
         if filereadable(expand("~/.vimrc.bundles.local"))
@@ -50,62 +52,98 @@
         endif
     " }
 
+    " In your .vimrc.bundles.local file"
+    " list only the plugin groups you will use
+    if !exists('g:spf13_bundle_groups')
+        let g:spf13_bundle_groups=['general', 'programming', 'php', 'ruby', 'python', 'javascript', 'html', 'misc']
+    endif
+
+    " To override all the included bundles, put
+    " g:override_spf13_bundles = 1
+    " in your .vimrc.bundles.local file"
+    if !exists("g:override_spf13_bundles")
+
     " General
-        Bundle 'scrooloose/nerdtree'
-        Bundle 'altercation/vim-colors-solarized'
-        "Bundle 'spf13/vim-colors'
-        Bundle 'tpope/vim-surround'
-        Bundle 'AutoClose'
-        Bundle 'kien/ctrlp.vim'
-        Bundle 'spf13/vim-preview'
-        Bundle 'vim-scripts/sessionman.vim'
-        Bundle 'matchit.zip'
-        Bundle 'Lokaltog/vim-powerline'
-        Bundle 'Lokaltog/vim-easymotion'
-        Bundle 'godlygeek/csapprox'
-        Bundle 'jistr/vim-nerdtree-tabs'
-        "Bundle 'flazz/vim-colorschemes'
+        if count(g:spf13_bundle_groups, 'general')
+            Bundle 'scrooloose/nerdtree'
+            Bundle 'altercation/vim-colors-solarized'
+            "Bundle 'spf13/vim-colors'
+            Bundle 'tpope/vim-surround'
+            Bundle 'AutoClose'
+            Bundle 'kien/ctrlp.vim'
+            Bundle 'vim-scripts/sessionman.vim'
+            Bundle 'matchit.zip'
+            Bundle 'Lokaltog/vim-powerline'
+            Bundle 'Lokaltog/vim-easymotion'
+            Bundle 'godlygeek/csapprox'
+            Bundle 'jistr/vim-nerdtree-tabs'
+            "Bundle 'flazz/vim-colorschemes'
+            Bundle 'corntrace/bufexplorer'
+        endif
 
     " General Programming
-        " Pick one of the checksyntax, jslint, or syntastic
-        Bundle 'scrooloose/syntastic'
-        Bundle 'garbas/vim-snipmate'
-        Bundle 'spf13/snipmate-snippets'
-        Bundle 'tpope/vim-fugitive'
-        Bundle 'scrooloose/nerdcommenter'
-        Bundle 'godlygeek/tabular'
-        Bundle 'majutsushi/tagbar'
-        Bundle 'Shougo/neocomplcache'
+        if count(g:spf13_bundle_groups, 'programming')
+            " Pick one of the checksyntax, jslint, or syntastic
+            Bundle 'scrooloose/syntastic'
+            Bundle 'garbas/vim-snipmate'
+            Bundle 'spf13/snipmate-snippets'
+            " Source support_function.vim to support snipmate-snippets.
+            if filereadable(expand("~/.vim/bundle/snipmate-snippets/snippets/support_functions.vim"))
+                source ~/.vim/bundle/snipmate-snippets/snippets/support_functions.vim
+            endif
+
+            Bundle 'tpope/vim-fugitive'
+            Bundle 'scrooloose/nerdcommenter'
+            Bundle 'godlygeek/tabular'
+            if executable('ctags')
+                Bundle 'majutsushi/tagbar'
+            endif
+            Bundle 'Shougo/neocomplcache'
+        endif
 
     " PHP
-        Bundle 'spf13/PIV'
+        if count(g:spf13_bundle_groups, 'php')
+            Bundle 'spf13/PIV'
+        endif
 
     " Python
-        " Pick either python-mode or pyflakes & pydoc
-        Bundle 'klen/python-mode'
-        Bundle 'python.vim'
-        Bundle 'python_match.vim'
-        Bundle 'pythoncomplete'
+        if count(g:spf13_bundle_groups, 'python')
+            " Pick either python-mode or pyflakes & pydoc
+            Bundle 'klen/python-mode'
+            Bundle 'python.vim'
+            Bundle 'python_match.vim'
+            Bundle 'pythoncomplete'
+        endif
 
     " Javascript
-        Bundle 'leshill/vim-json'
-        Bundle 'groenewege/vim-less'
-        "Bundle 'taxilian/vim-web-indent'
-        "customized by yyy
-        Bundle 'walm/jshint.vim'
-        Bundle 'pangloss/vim-javascript'
+        if count(g:spf13_bundle_groups, 'javascript')
+            Bundle 'leshill/vim-json'
+            Bundle 'groenewege/vim-less'
+            "Bundle 'taxilian/vim-web-indent'
+            "customized by yyy
+            Bundle 'walm/jshint.vim'
+            Bundle 'pangloss/vim-javascript'
+        endif
 
     " HTML
-        Bundle 'HTML-AutoCloseTag'
-        Bundle 'ChrisYip/Better-CSS-Syntax-for-Vim'
+        if count(g:spf13_bundle_groups, 'html')
+            Bundle 'HTML-AutoCloseTag'
+            Bundle 'ChrisYip/Better-CSS-Syntax-for-Vim'
+        endif
 
     " Ruby
-        Bundle 'rails.vim'
+        if count(g:spf13_bundle_groups, 'ruby')
+            Bundle 'rails.vim'
+        endif
 
     " Misc
-        Bundle 'spf13/vim-markdown'
-        Bundle 'tpope/vim-cucumber'
-        Bundle 'Puppet-Syntax-Highlighting'
+        if count(g:spf13_bundle_groups, 'misc')
+            Bundle 'spf13/vim-markdown'
+            Bundle 'spf13/vim-preview'
+            Bundle 'tpope/vim-cucumber'
+            Bundle 'Puppet-Syntax-Highlighting'
+        endif
+    endif
 " }
 
 " General {
@@ -142,11 +180,13 @@
 " }
 
 " Vim UI {
-    let g:solarized_termtrans=1
-    let g:solarized_termcolors=256
-    let g:solarized_contrast="high"
-    let g:solarized_visibility="high"
-    colorscheme solarized
+    if filereadable(expand("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
+        color solarized                 " load a colorscheme
+    endif
+        let g:solarized_termtrans=1
+        let g:solarized_termcolors=256
+        let g:solarized_contrast="high"
+        let g:solarized_visibility="high"
     set tabpagemax=15               " only show 15 tabs
     set showmode                    " display the current mode
 
@@ -201,11 +241,11 @@
     set expandtab                   " tabs are spaces, not tabs
     set tabstop=4                   " an indentation every four columns
     set softtabstop=4               " let backspace delete indent
-    "set matchpairs+=<:>                " match, to be used with % 
+    "set matchpairs+=<:>                " match, to be used with %
     set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
     "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
     " Remove trailing whitespaces and ^M chars
-    autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+    autocmd FileType c,cpp,java,php,javascript,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
 " }
 
 " Key (re)Mappings {
@@ -265,7 +305,7 @@
 
     " visual shifting (does not exit Visual mode)
     vnoremap < <gv
-    vnoremap > >gv 
+    vnoremap > >gv
 
     " Fix home and end keybindings for screen, particularly on mac
     " - for some reason this fixes the arrow keys too. huh.
@@ -287,6 +327,10 @@
 
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
+
+    " Easier horizontal scrolling
+    map zl zL
+    map zh zH
 " }
 
 " Plugins {
@@ -330,10 +374,6 @@
         set tags=./tags;/,~/.vimtags
     " }
 
-    " EasyTags {
-        let g:easytags_cmd = 'ctags'
-    " }
-
     " AutoCloseTag {
         " Make it so AutoCloseTag works for xml and xhtml files as well
         au FileType xhtml,xml ru ftplugin/html/autoclosetag.vim
@@ -344,8 +384,6 @@
         " Setting the author var
         " If forking, please overwrite in your .vimrc.local file
         let g:snips_author = 'Steve Francia <steve.francia@gmail.com>'
-        " Shortcut for reloading snippets, useful when developing
-        nnoremap ,smr <esc>:exec ReloadAllSnippets()<cr>
     " }
 
     " NerdTree {
@@ -423,6 +461,13 @@
         nnoremap <silent> <leader>tt :TagbarToggle<CR>
      "}
 
+     " PythonMode {
+     " Disable if python support not present
+        if !has('python')
+           let g:pymode = 1
+        endif
+     " }
+
      " Fugitive {
         nnoremap <silent> <leader>gs :Gstatus<CR>
         nnoremap <silent> <leader>gd :Gdiff<CR>
@@ -453,10 +498,10 @@
         inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
 
-        " <CR>: close popup 
+        " <CR>: close popup
         " <s-CR>: close popup and save indent.
         inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-        inoremap <expr><s-CR> pumvisible() ? neocomplcache#close_popup() "\<CR>" : "\<CR>" 
+        inoremap <expr><s-CR> pumvisible() ? neocomplcache#close_popup() "\<CR>" : "\<CR>"
         " <TAB>: completion.
         inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
@@ -560,8 +605,8 @@ endfunction
 " }
 
 " Use local gvimrc if available and gui is running {
-    if has('gui_running') 
-        if filereadable(expand("~/.gvimrc.local")) 
+    if has('gui_running')
+        if filereadable(expand("~/.gvimrc.local"))
             source ~/.gvimrc.local
         endif
     endif
