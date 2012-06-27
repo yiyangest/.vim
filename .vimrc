@@ -53,7 +53,7 @@
     " General
         Bundle 'scrooloose/nerdtree'
         Bundle 'altercation/vim-colors-solarized'
-        Bundle 'spf13/vim-colors'
+        "Bundle 'spf13/vim-colors'
         Bundle 'tpope/vim-surround'
         Bundle 'AutoClose'
         Bundle 'kien/ctrlp.vim'
@@ -64,7 +64,7 @@
         Bundle 'Lokaltog/vim-easymotion'
         Bundle 'godlygeek/csapprox'
         Bundle 'jistr/vim-nerdtree-tabs'
-        Bundle 'flazz/vim-colorschemes'
+        "Bundle 'flazz/vim-colorschemes'
 
     " General Programming
         " Pick one of the checksyntax, jslint, or syntastic
@@ -142,15 +142,15 @@
 " }
 
 " Vim UI {
-    color solarized                 " load a colorscheme
-        let g:solarized_termtrans=1
-        let g:solarized_termcolors=256
-        let g:solarized_contrast="high"
-        let g:solarized_visibility="high"
+    let g:solarized_termtrans=1
+    let g:solarized_termcolors=256
+    let g:solarized_contrast="high"
+    let g:solarized_visibility="high"
+    colorscheme solarized
     set tabpagemax=15               " only show 15 tabs
     set showmode                    " display the current mode
 
-    set t_Co=256
+    "set t_Co=256
 
     set cursorline                  " highlight current line
 
