@@ -127,6 +127,7 @@
 
     " HTML
         if count(g:spf13_bundle_groups, 'html')
+            Bundle 'digitaltoad/vim-jade'
             Bundle 'HTML-AutoCloseTag'
             Bundle 'ChrisYip/Better-CSS-Syntax-for-Vim'
         endif
