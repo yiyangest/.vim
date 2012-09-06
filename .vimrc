@@ -42,7 +42,10 @@
         Bundle 'gmarik/vundle'
         Bundle 'MarcWeber/vim-addon-mw-utils'
         Bundle 'tomtom/tlib_vim'
-        if executable('ack')
+        if executable('ack-grep')
+            let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+            Bundle 'mileszs/ack.vim'
+        elseif executable('ack')
             Bundle 'mileszs/ack.vim'
         endif
 
@@ -79,6 +82,7 @@
             Bundle 'jistr/vim-nerdtree-tabs'
             "Bundle 'flazz/vim-colorschemes'
             Bundle 'corntrace/bufexplorer'
+            Bundle 'mbbill/undotree'
         endif
 
     " General Programming
@@ -128,13 +132,16 @@
     " HTML
         if count(g:spf13_bundle_groups, 'html')
             Bundle 'digitaltoad/vim-jade'
-            Bundle 'HTML-AutoCloseTag'
+            Bundle 'amirh/HTML-AutoCloseTag'
             Bundle 'ChrisYip/Better-CSS-Syntax-for-Vim'
         endif
 
     " Ruby
         if count(g:spf13_bundle_groups, 'ruby')
-            Bundle 'rails.vim'
+            Bundle 'tpope/vim-rails'
+            let g:rubycomplete_buffer_loading = 1
+            "let g:rubycomplete_classes_in_global = 1
+            "let g:rubycomplete_rails = 1
         endif
 
     " Misc
@@ -143,6 +150,11 @@
             Bundle 'spf13/vim-preview'
             Bundle 'tpope/vim-cucumber'
             Bundle 'Puppet-Syntax-Highlighting'
+        endif
+
+    " Twig
+        if count(g:spf13_bundle_groups, 'twig')
+            Bundle 'beyondwords/vim-twig'
         endif
     endif
 " }
@@ -253,6 +265,7 @@
     "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
     " Remove trailing whitespaces and ^M chars
     autocmd FileType c,cpp,java,php,javascript,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+    autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
 " }
 
 " Key (re)Mappings {
@@ -542,6 +555,9 @@
 
      " }
 
+     " UndoTree {
+        nnoremap <c-u> :UndotreeToggle<CR>
+     " }
 
 " }
 
@@ -550,11 +566,18 @@
     if has('gui_running')
         set guioptions-=T           " remove the toolbar
         set lines=40                " 40 lines of text instead of 24,
-        set guifont=Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
+        if has("gui_gtk2")
+            set guifont=Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
+        else
+            set guifont=Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
+        endif
         if has('gui_macvim')
             set transparency=5          " Make the window slightly transparent
         endif
     else
+        if &term == 'xterm' || &term == 'screen'
+            set t_Co=256                 " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+        endif
         "set term=builtin_ansi       " Make arrow and other keys work
     endif
 " }
