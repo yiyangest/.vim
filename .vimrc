@@ -189,6 +189,7 @@
 
 " Key (re)Mappings {
 
+    nnoremap ; :
     "The default leader is '\', but many people prefer ',' as it's in a standard
     "location. To override this behavior and set it back to '\' (or any other
     "character) add let g:spf13_leader='\' in your .vimrc.bundles.local file
