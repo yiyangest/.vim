@@ -18,7 +18,13 @@
 " Environment {
     " Basics {
         set nocompatible        " must be first line
-        set background=dark     " Assume a dark background
+        if has ("unix") && "Darwin" != system("echo -n \"$(uname)\"")
+          " on Linux use + register for copy-paste
+          set clipboard=unnamedplus
+        else
+          " one mac and windows, use * register for copy-paste
+          set clipboard=unnamed
+        endif
     " }
 
     " Windows Compatible {
@@ -28,9 +34,11 @@
           set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
         endif
     " }
-    "
+
     " Setup Bundle Support {
-    " The next two lines ensure that the ~/.vim/bundle/ system works
+    " The next three lines ensure that the ~/.vim/bundle/ system works
+        filetype on
+        filetype off
         set rtp+=~/.vim/bundle/vundle
         call vundle#rc()
     " }
@@ -38,125 +46,21 @@
 " }
 
 " Bundles {
-    " Deps
-        Bundle 'gmarik/vundle'
-        Bundle 'MarcWeber/vim-addon-mw-utils'
-        Bundle 'tomtom/tlib_vim'
-        if executable('ack-grep')
-            let g:ackprg="ack-grep -H --nocolor --nogroup --column"
-            Bundle 'mileszs/ack.vim'
-        elseif executable('ack')
-            Bundle 'mileszs/ack.vim'
-        endif
-
     " Use local bundles if available {
         if filereadable(expand("~/.vimrc.bundles.local"))
             source ~/.vimrc.bundles.local
         endif
     " }
-
-    " In your .vimrc.bundles.local file"
-    " list only the plugin groups you will use
-    if !exists('g:spf13_bundle_groups')
-        let g:spf13_bundle_groups=['general', 'programming', 'php', 'ruby', 'python', 'javascript', 'html', 'misc']
-    endif
-
-    " To override all the included bundles, put
-    " g:override_spf13_bundles = 1
-    " in your .vimrc.bundles.local file"
-    if !exists("g:override_spf13_bundles")
-
-    " General
-        if count(g:spf13_bundle_groups, 'general')
-            Bundle 'scrooloose/nerdtree'
-            Bundle 'altercation/vim-colors-solarized'
-            "Bundle 'spf13/vim-colors'
-            Bundle 'tpope/vim-surround'
-            Bundle 'AutoClose'
-            Bundle 'kien/ctrlp.vim'
-            Bundle 'vim-scripts/sessionman.vim'
-            Bundle 'matchit.zip'
-            Bundle 'Lokaltog/vim-powerline'
-            Bundle 'Lokaltog/vim-easymotion'
-            Bundle 'godlygeek/csapprox'
-            Bundle 'jistr/vim-nerdtree-tabs'
-            "Bundle 'flazz/vim-colorschemes'
-            Bundle 'corntrace/bufexplorer'
-            Bundle 'mbbill/undotree'
+    " Use fork bundles if available {
+        if filereadable(expand("~/.vimrc.bundles.fork"))
+            source ~/.vimrc.bundles.fork
         endif
-
-    " General Programming
-        if count(g:spf13_bundle_groups, 'programming')
-            " Pick one of the checksyntax, jslint, or syntastic
-            Bundle 'scrooloose/syntastic'
-            Bundle 'garbas/vim-snipmate'
-            Bundle 'spf13/snipmate-snippets'
-            " Source support_function.vim to support snipmate-snippets.
-            if filereadable(expand("~/.vim/bundle/snipmate-snippets/snippets/support_functions.vim"))
-                source ~/.vim/bundle/snipmate-snippets/snippets/support_functions.vim
-            endif
-
-            Bundle 'tpope/vim-fugitive'
-            Bundle 'scrooloose/nerdcommenter'
-            Bundle 'godlygeek/tabular'
-            if executable('ctags')
-                Bundle 'majutsushi/tagbar'
-            endif
-            Bundle 'Shougo/neocomplcache'
+    " }
+    " Use bundles config {
+        if filereadable(expand("~/.vimrc.bundles"))
+            source ~/.vimrc.bundles
         endif
-
-    " PHP
-        if count(g:spf13_bundle_groups, 'php')
-            Bundle 'spf13/PIV'
-        endif
-
-    " Python
-        if count(g:spf13_bundle_groups, 'python')
-            " Pick either python-mode or pyflakes & pydoc
-            Bundle 'klen/python-mode'
-            Bundle 'python.vim'
-            Bundle 'python_match.vim'
-            Bundle 'pythoncomplete'
-        endif
-
-    " Javascript
-        if count(g:spf13_bundle_groups, 'javascript')
-            Bundle 'leshill/vim-json'
-            Bundle 'groenewege/vim-less'
-            "Bundle 'taxilian/vim-web-indent'
-            "customized by yyy
-            Bundle 'walm/jshint.vim'
-            Bundle 'pangloss/vim-javascript'
-        endif
-
-    " HTML
-        if count(g:spf13_bundle_groups, 'html')
-            Bundle 'digitaltoad/vim-jade'
-            Bundle 'amirh/HTML-AutoCloseTag'
-            Bundle 'ChrisYip/Better-CSS-Syntax-for-Vim'
-        endif
-
-    " Ruby
-        if count(g:spf13_bundle_groups, 'ruby')
-            Bundle 'tpope/vim-rails'
-            let g:rubycomplete_buffer_loading = 1
-            "let g:rubycomplete_classes_in_global = 1
-            "let g:rubycomplete_rails = 1
-        endif
-
-    " Misc
-        if count(g:spf13_bundle_groups, 'misc')
-            Bundle 'spf13/vim-markdown'
-            Bundle 'spf13/vim-preview'
-            Bundle 'tpope/vim-cucumber'
-            Bundle 'Puppet-Syntax-Highlighting'
-        endif
-
-    " Twig
-        if count(g:spf13_bundle_groups, 'twig')
-            Bundle 'beyondwords/vim-twig'
-        endif
-    endif
+    " }
 " }
 
 " General {
@@ -167,9 +71,16 @@
     filetype plugin indent on   " Automatically detect file types.
     syntax on                   " syntax highlighting
     set mouse=a                 " automatically enable mouse usage
+    set mousehide               " hide the mouse cursor while typing
     scriptencoding utf-8
-    autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
-    " always switch to the current file directory.
+
+    " Most prefer to automatically switch to the current file directory when
+    " a new buffer is opened; to prevent this behavior, add
+    " let g:spf13_no_autochdir = 1 to your .vimrc.bundles.local file
+    if !exists('g:spf13_no_autochdir')
+        autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
+        " always switch to the current file directory.
+    endif
 
     " set autowrite                  " automatically write a file when leaving a modified buffer
     set shortmess+=filmnrxoOtT      " abbrev. of messages (avoids 'hit enter')
@@ -186,9 +97,17 @@
             set undolevels=1000         "maximum number of changes that can be undone
             set undoreload=10000        "maximum number lines to save for undo on a buffer reload
         endif
-        " Could use * rather than *.*, but I prefer to leave .files unsaved
-        au BufWinLeave *.* silent! mkview  "make vim save view (state) (folds, cursor, etc)
-        au BufWinEnter *.* silent! loadview "make vim load view (state) (folds, cursor, etc)
+
+    " To disable views set
+    " g:spf13_no_views = 1
+    " in your .vimrc.bundles.local file"
+    if !exists('g:spf13_no_views')
+        " Add exclusions to mkview and loadview
+        " eg: *.*, svn-commit.tmp
+        let g:skipview_files = [
+            \ '[example pattern]'
+            \ ]
+    endif
     " }
 " }
 
@@ -271,11 +190,13 @@
 " Key (re)Mappings {
 
     "The default leader is '\', but many people prefer ',' as it's in a standard
-    "location
-    let mapleader = ','
-
-    " Making it so ; works like : for commands. Saves typing and eliminates :W style typos due to lazy holding shift.
-    nnoremap ; :
+    "location. To override this behavior and set it back to '\' (or any other
+    "character) add let g:spf13_leader='\' in your .vimrc.bundles.local file
+    if !exists('g:spf13_leader')
+        let mapleader = ','
+    else
+        let mapleader=g:spf13_leader
+    endif
 
     " Easier moving in tabs and windows
     map <C-J> <C-W>j<C-W>_
@@ -289,16 +210,30 @@
 
     " The following two lines conflict with moving to top and bottom of the
     " screen
-    " If you prefer that functionality, comment them out.
-    map <S-H> gT
-    map <S-L> gt
+    " If you prefer that functionality, add let g:spf13_no_fastTabs = 1 in
+    " your .vimrc.bundles.local file
+
+    if !exists('g:spf13_no_fastTabs')
+        map <S-H> gT
+        map <S-L> gt
+    endif
 
     " Stupid shift key fixes
-    cmap W w
-    cmap WQ wq
-    cmap wQ wq
-    cmap Q q
-    cmap Tabe tabe
+    if !exists('g:spf13_no_keyfixes')
+        if has("user_commands")
+            command! -bang -nargs=* -complete=file E e<bang> <args>
+            command! -bang -nargs=* -complete=file W w<bang> <args>
+            command! -bang -nargs=* -complete=file Wq wq<bang> <args>
+            command! -bang -nargs=* -complete=file WQ wq<bang> <args>
+            command! -bang Wa wa<bang>
+            command! -bang WA wa<bang>
+            command! -bang Q q<bang>
+            command! -bang QA qa<bang>
+            command! -bang Qa qa<bang>
+        endif
+
+        cmap Tabe tabe
+    endif
 
     " Yank from the cursor to the end of the line, to be consistent with C and D.
     nnoremap Y y$
@@ -347,6 +282,10 @@
 
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
+
+    " map <Leader>ff to display all lines with keyword under cursor
+    " and ask which one to jump to
+    nmap <Leader>ff [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
     " Easier horizontal scrolling
     map zl zL
@@ -415,39 +354,23 @@
         let NERDTreeIgnore=['\.pyc', '\~$', '\.swo$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
         let NERDTreeChDirMode=0
         let NERDTreeQuitOnOpen=1
+        let NERDTreeMouseMode=2
         let NERDTreeShowHidden=1
         let NERDTreeKeepTreeInNewTab=1
+        let g:nerdtree_tabs_open_on_gui_startup=0
     " }
 
     " Tabularize {
-        if exists(":Tabularize")
-          nmap <Leader>a= :Tabularize /=<CR>
-          vmap <Leader>a= :Tabularize /=<CR>
-          nmap <Leader>a: :Tabularize /:<CR>
-          vmap <Leader>a: :Tabularize /:<CR>
-          nmap <Leader>a:: :Tabularize /:\zs<CR>
-          vmap <Leader>a:: :Tabularize /:\zs<CR>
-          nmap <Leader>a, :Tabularize /,<CR>
-          vmap <Leader>a, :Tabularize /,<CR>
-          nmap <Leader>a<Bar> :Tabularize /<Bar><CR>
-          vmap <Leader>a<Bar> :Tabularize /<Bar><CR>
-
-          " The following function automatically aligns when typing a
-          " supported character
-          inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
-
-          function! s:align()
-              let p = '^\s*|\s.*\s|\s*$'
-              if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
-                  let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
-                  let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
-                  Tabularize/|/l1
-                  normal! 0
-                  call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
-              endif
-          endfunction
-
-        endif
+        nmap <Leader>a= :Tabularize /=<CR>
+        vmap <Leader>a= :Tabularize /=<CR>
+        nmap <Leader>a: :Tabularize /:<CR>
+        vmap <Leader>a: :Tabularize /:<CR>
+        nmap <Leader>a:: :Tabularize /:\zs<CR>
+        vmap <Leader>a:: :Tabularize /:\zs<CR>
+        nmap <Leader>a, :Tabularize /,<CR>
+        vmap <Leader>a, :Tabularize /,<CR>
+        nmap <Leader>a<Bar> :Tabularize /<Bar><CR>
+        vmap <Leader>a<Bar> :Tabularize /<Bar><CR>
      " }
 
      " Session List {
@@ -498,65 +421,97 @@
      "}
 
      " neocomplcache {
-        let g:neocomplcache_enable_at_startup = 1
-        let g:neocomplcache_enable_camel_case_completion = 1
-        let g:neocomplcache_enable_smart_case = 1
-        let g:neocomplcache_enable_underbar_completion = 1
-        let g:neocomplcache_min_syntax_length = 3
-        let g:neocomplcache_enable_auto_delimiter = 1
+         let g:acp_enableAtStartup = 0
+         let g:neocomplcache_enable_at_startup = 1
+         let g:neocomplcache_enable_smart_case = 1
+         let g:neocomplcache_min_syntax_length = 3
+         let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 
-        " AutoComplPop like behavior.
-        let g:neocomplcache_enable_auto_select = 0
+         " Define dictionary.
+         let g:neocomplcache_dictionary_filetype_lists = {
+                     \ 'default' : '',
+                     \ 'vimshell' : $HOME.'/.vimshell_hist',
+                     \ 'scheme' : $HOME.'/.gosh_completions'
+                     \ }
 
-        " SuperTab like snippets behavior.
-        imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+         " Define keyword.
+         if !exists('g:neocomplcache_keyword_patterns')
+             let g:neocomplcache_keyword_patterns = {}
+         endif
+         let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-        " Plugin key-mappings.
-        imap <C-k>     <Plug>(neocomplcache_snippets_expand)
-        smap <C-k>     <Plug>(neocomplcache_snippets_expand)
-        inoremap <expr><C-g>     neocomplcache#undo_completion()
-        inoremap <expr><C-l>     neocomplcache#complete_common_string()
+         " Plugin key-mappings.
+         inoremap <expr><C-g> neocomplcache#undo_completion()
+         inoremap <expr><C-l> neocomplcache#complete_common_string()
 
+         " Recommended key-mappings.
+         " <CR>: close popup and save indent.
+         inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+         function! s:my_cr_function()
+             return neocomplcache#smart_close_popup() . "\<CR>"
+             " For no inserting <CR> key.
+             "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+         endfunction
+         " <TAB>: completion.
+         inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+         " <C-h>, <BS>: close popup and delete backword char.
+         inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+         inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+         inoremap <expr><C-y> neocomplcache#close_popup()
+         inoremap <expr><C-e> neocomplcache#cancel_popup()
 
-        " <CR>: close popup
-        " <s-CR>: close popup and save indent.
-        inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-        inoremap <expr><s-CR> pumvisible() ? neocomplcache#close_popup() "\<CR>" : "\<CR>"
-        " <TAB>: completion.
-        inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+         " Enable omni completion.
+         autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+         autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+         autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+         autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+         autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+         autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 
-        " <C-h>, <BS>: close popup and delete backword char.
-        inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-        inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-        inoremap <expr><C-y>  neocomplcache#close_popup()
-        inoremap <expr><C-e>  neocomplcache#cancel_popup()
+         " Enable heavy omni completion.
+         if !exists('g:neocomplcache_omni_patterns')
+             let g:neocomplcache_omni_patterns = {}
+         endif
+         let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+         let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+         let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+         let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+     " }
 
-        " Enable omni completion.
-        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-        autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+     " neosnippet {
+         " use honza's snippets
+         let g:neosnippet#snippets_directory='~/.vim/bundle/snipmate-snippets/snippets'
 
-        " Enable heavy omni completion.
-        if !exists('g:neocomplcache_omni_patterns')
-            let g:neocomplcache_omni_patterns = {}
-        endif
-        let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
-        "autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-        let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-        let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-        let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+         " Plugin key-mappings.
+         imap <C-k> <Plug>(neosnippet_expand_or_jump)
+         smap <C-k> <Plug>(neosnippet_expand_or_jump)
+         xmap <C-k> <Plug>(neosnippet_expand_target)
+         xmap <C-l> <Plug>(neosnippet_start_unite_snippet_target)
 
-        " For snippet_complete marker.
-        if has('conceal')
-            set conceallevel=2 concealcursor=i
-        endif
+         " For snippet_complete marker.
+         if has('conceal')
+             set conceallevel=2 concealcursor=i
+         endif
 
      " }
 
      " UndoTree {
-        nnoremap <c-u> :UndotreeToggle<CR>
+        nnoremap <Leader>u :UndotreeToggle<CR>
+        let g:undotree_SetFocusWhenToggle=1 " if undotree is opened, it is likely one wants to interact with it.
+     " }
+
+     " indent_guides {
+        if !exists('g:spf13_no_indent_guides_autocolor')
+            let g:indent_guides_auto_colors = 1
+        else
+            " for some colorscheme ,autocolor will not work,like 'desert','ir_black'.
+            autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#212121   ctermbg=3
+            autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#404040 ctermbg=4
+        endif
+        set ts=4 sw=4 et
+        let g:indent_guides_start_level = 2
+        let g:indent_guides_guide_size = 1
+        let g:indent_guides_enable_on_vim_startup = 1
      " }
 
 " }
@@ -628,6 +583,11 @@ function! NERDTreeInitAsNeeded()
 endfunction
 " }
 
+" Use fork vimrc if available {
+    if filereadable(expand("~/.vimrc.fork"))
+        source ~/.vimrc.fork
+    endif
+" }
 " Use local vimrc if available {
     if filereadable(expand("~/.vimrc.local"))
         source ~/.vimrc.local

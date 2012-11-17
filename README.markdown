@@ -34,9 +34,15 @@ The goal has always been to add functionality without changing all the features,
 
 # Installation 
 
+## Linux, \*nix, Mac OSX Installation
+
+The easiest way to install spf13-vim is to use our [automatic installer](http://j.mp/spf13-vim3) by simply copying and pasting the following line into a terminal. This will install spf13-vim and backup your existing vim configuration. If you are upgrading from a prior version (before 3.0) this is also the recommended installation.
+
+```bash
+
     curl https://raw.github.com/yiyangest/.vim/3.0/bootstrap.sh -o - | sh
- 
-or
+
+```
 
 ## Installing on Windows
 
@@ -86,13 +92,21 @@ to verify all good, run:
 The easiest way is to download and run the spf13-vim-windows-install.cmd file.
 
 ## Updating to the latest version
+The simpliest (and safest) way to update is to simply rerun the installer. It will completely and non destructively upgrade to the latest version. 
+
+```bash
+
+    curl http://j.mp/spf13-vim3 -L -o - | sh
+
+```
+
+Alternatively you can manually perform the following steps. If anything has changed with the structure of the configuration you will need to create the appropriate symlinks.
 
 ```bash
     cd $HOME/to/spf13-vim/
     git pull
     vim +BundleInstall! +BundleClean +q
 ```
-
 
 ### Fork me on GitHub
 
@@ -130,6 +144,28 @@ For example, to override the default color schemes:
     echo colorscheme ir_black  >> ~/.vimrc.local
 ```
 
+### Fork Customization
+
+There is an additional tier of customization available to those who want to maintain a
+fork of spf13-vim specialized for a particular group. These users can create `.vimrc.fork`
+and `.vimrc.bundles.fork` files in the root of their fork.  The load order for the configuration is:
+
+1. `.vimrc.bundles.local` - local user bundle configuration
+2. `.vimrc.bundles.fork` - fork bundle configuration
+3. `.vimrc.bundles` - spf13-vim bundle configuration
+4. `.vimrc` - spf13-vim vim configuration 
+5. `.vimrc.fork` - fork vim configuration
+6. `.vimrc.local` - local user configuration 
+
+See `.vimrc.bundles` for specifics on what options can be set to override bundle configuration. See `.vimrc` for specifics 
+on what options can be overridden. Most vim configuration options should be set in your `.vimrc.fork` file, bundle configuration
+needs to be set in your `.vimrc.bundles.fork` file.
+
+You may also want to update your `README.markdown` file so that the `bootstrap.sh` link points to your repository and your `bootstrap.sh`
+file to pull down your fork.
+
+For an example of a fork of spf13-vim that provides customization in this manner see [taxilian's fork](https://github.com/taxilian/spf13-vim).
+
 # Plugins
 
 spf13-vim contains a curated set of popular vim plugins, colors, snippets and syntaxes. Great care has been made to ensure that these plugins play well together and have optimal configuration.
@@ -146,6 +182,16 @@ To add a new bundle
 
 Here are a few of the plugins:
 
+
+## [Undotree]
+
+If you undo changes and then make a new change, in most editors the changes you undid are gone forever, as their undo-history is a simple list.
+Since version 7.0 vim uses an undo-tree instead. If you make a new change after undoing changes, a new branch is created in that tree.
+Combined with persistent undo, this is nearly as flexible and safe as git ;-)
+
+Undotree makes that feature more accessible by creating a visual representation of said undo-tree.
+
+**QuickStart** Launch using `<Leader>u`.
 
 ## [NERDTree]
 
@@ -264,17 +310,17 @@ You can learn more about it with :help Ack
 
 **QuickStart** :Ack
 
-## Tabularize
+## [Tabularize]
 
 Tabularize lets you align statements on their equal signs and other characters
 
 **Customizations**:
 
- * `<Leader>a=` :Tabularize /=<CR>
- * `<Leader>a:` :Tabularize /:<CR>
- * `<Leader>a::` :Tabularize /:\zs<CR>
- * `<Leader>a,` :Tabularize /,<CR>
- * `<Leader>a<Bar>` :Tabularize /<Bar><CR>
+ * `<Leader>a= :Tabularize /=<CR>`
+ * `<Leader>a: :Tabularize /:<CR>`
+ * `<Leader>a:: :Tabularize /:\zs<CR>`
+ * `<Leader>a, :Tabularize /,<CR>`
+ * `<Leader>a<Bar> :Tabularize /<Bar><CR>`
 
 ## [Tagbar]
 
@@ -366,6 +412,7 @@ Here's some tips if you've never used VIM before:
 [Vundle]:http://github.com/gmarik/vundle
 [PIV]:http://github.com/spf13/PIV
 [NERDCommenter]:http://github.com/scrooloose/nerdcommenter
+[Undotree]:https://github.com/mbbill/undotree
 [NERDTree]:http://github.com/scrooloose/nerdtree
 [ctrlp]:http://github.com/kien/ctrlp.vim
 [solarized]:http://github.com/altercation/vim-colors-solarized
