@@ -15,12 +15,15 @@ lnif() {
     if [ ! -e $2 ] ; then
         ln -s $1 $2
     fi
+    if [ -L $2 ] ; then
+        ln -sf $1 $2
+    fi
 }
 
-echo "Thanks for installing spf13-vim\n"
+echo "Thanks for installing spf13-vim"
 
 # Backup existing .vim stuff
-echo "backing up current vim config\n"
+echo "backing up current vim config"
 today=`date +%Y%m%d`
 for i in $HOME/.vim $HOME/.vimrc $HOME/.gvimrc; do [ -e $i ] && [ ! -L $i ] && mv $i $i.$today; done
 
@@ -50,4 +53,7 @@ if [ ! -e $HOME/.vim/bundle/vundle ]; then
 fi
 
 echo "update/install plugins using Vundle"
-vim -u $endpath/.vimrc.bundles - +BundleInstall! +BundleClean +qall
+system_shell=$SHELL
+export SHELL="/bin/sh"
+vim -u $endpath/.vimrc.bundles +BundleInstall! +BundleClean +qall
+export SHELL=$system_shell
