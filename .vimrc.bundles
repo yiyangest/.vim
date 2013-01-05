@@ -172,6 +172,7 @@
             Bundle 'tpope/vim-cucumber'
             Bundle 'quentindecock/vim-cucumber-align-pipes'
             Bundle 'Puppet-Syntax-Highlighting'
+            Bundle 'tangledhelix/vim-octopress'
         endif
 
     " Twig
