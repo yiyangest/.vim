@@ -1,9 +1,4 @@
 .DS_Store
 *.pyc
 *._*
-<<<<<<< HEAD
-*.vim/sessions/
-*.netrwhist
-=======
-.vim/bundle
->>>>>>> FETCH_HEAD
+.vim/
